@@ -1,133 +1,156 @@
-#include <gl/glut.h>
-#include <math.h>
-
-void Teclado(unsigned char tecla, int um, int dois);
-float a, b,c,d;
-
-void inicia(void){
-     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-  // glOrtho(0,600,600,0,-1,1);   
-  gluOrtho2D(0.0, 600.0, 0.0, 600.0);
-    } 
+#include <GL/glut.h>
+#include <stdlib.h>
 
 
-void desenha(){
-   
-   glPushMatrix();
-   glClear(GL_COLOR_BUFFER_BIT);
- //  glScalef(a,b,1);    
-   glTranslatef(c,d,1);           
 
-    glColor3f(0.20, 0.40, 1.0);
+void Remodelagem(int x, int y);
+void Cubo();
+void Inicia();
+void Mostrar();
+void Timer();
 
-//ESTRUTURA externa
- glBegin(GL_LINES);
-  glVertex2f(125,290);
-  glVertex2f(160,260);
 
-  glVertex2f(125,290);
-  glVertex2f(160,320);
+//GLOBAIS
+float Angulo = 0.0;
+
+void Reshape(int x, int y){
  
- glVertex2f(160,260);
-  glVertex2f(245,260);
+  float r;
+   r = x * 1.0 / y;
   
-  glVertex2f(160,320);
-  glVertex2f(215,320);
+   glMatrixMode(GL_PROJECTION);
+   glLoadIdentity();
+   glViewport(0,0, x, y);
+   gluPerspective(45.0f, r, 0.1f, 1000);
+
   
-  glVertex2f(245,260);
-  glVertex2f(215,320);
-  
-  glVertex2f(205,257);
-  glVertex2f(205,230);
-    
-  glVertex2f(205,230);
-  glVertex2f(171,230);
-  
-   glVertex2f(205,230);
-   glVertex2f(245,230);
-   
- glVertex2f(205,230);
-   glVertex2f(205,250);
-   
-   glVertex2f(230, 289);
-   glVertex2f(315,290);
-   
-   glVertex2f(225, 305);
-   glVertex2f(315, 304);
-   
-   glVertex2f(315,290);
-   glVertex2f(315, 304);
-   
-   glVertex2f(315,304);
-   glVertex2f(314,270);
-   
-   
-   glVertex2f(300,288);
-   glVertex2f(314,270);
- 
- 
- //partes de fora: helices e escadas
-   
-   glVertex2f(160,320);  //ESCADA
-   glVertex2f(160,342);  
-   
-   glVertex2f(214,320);  //ESCADA
-   glVertex2f(214,340);  
-   
-   glVertex2f(160,330);  //ESCADA
-   glVertex2f(214,330);
-   
-   glVertex2f(160,320);  //PORTA
-   glVertex2f(160,275);  
-   
-   glVertex2f(214,320);  //PORTA          
-   glVertex2f(215,275);
-   
-   glVertex2f(160,275);  //PORTA  
-   glVertex2f(215,275);
-        
-   
-    glEnd();
-    
-       
- glPopMatrix();       
- glFlush();
+   glMatrixMode(GL_MODELVIEW);
 }
 
-void Teclado(unsigned char tecla, int um, int dois){
+void Cubo(){ 
 
-  switch(tecla){
-                case '+': a += 0.1;
-                          b += 0.1;
-                          break;
-                case '-': a -= 0.1;
-                          b -= 0.1;
-                          break;   
-                case 27: exit(0);
-                break;
-                }
-                glutPostRedisplay();
-  }
+ //   glColor3f(1,1,1);
+    glTranslatef(0.0,0.0,-5.0);
+    glRotatef(Angulo,1.0, 0.0, 0.0);
+    glRotatef(Angulo,0.0, 2.0, 0.0);
+    glRotatef(Angulo,0.0, 0.0, 3.0);
+    glutSolidCube(1);
 
-
-
-int main (int argc, char *argv[]){
-    a = 1;
-    b = 1;
  
+}
+
+void Timer(int){
+     
+     glutPostRedisplay();
+     glutTimerFunc(1000/60, Timer, 0);
+     
+     Angulo +=0.8;
+      if(Angulo > 360.0){
+                Angulo = Angulo-360.0;
+ }
+}
+
+void Mostrar(){
+    
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glColor3d(1,1,1);
+    glLoadIdentity();
+    Cubo();
+    glutPostRedisplay();
+    glutSwapBuffers();
+    }
+
+void Inicia(){
+    
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45.5, 1.0f, 0.1f, 1000);
+    glMatrixMode(GL_MODELVIEW);
+    glEnable(GL_DEPTH_TEST);
+    
+//    glClearColor(0,0.6, 1,1);
+}
  
+void key(unsigned char key, int x, int y){
+    switch (key) 
+    {
+        case 27 : 
+        case 'q':
+            exit(0);
+            break;
+
+        case '+':
+            Angulo++;
+            break;
+
+        case '-':
+            if (Angulo>3);
+            {
+                Angulo--;
+            
+            }
+            break;
+    }
+
+    glutPostRedisplay();
+}
+
+const GLfloat luz_ambiente[] = { 0.0, 0.0, 0.0, 1.0 };
+const GLfloat luz_difusa[] = { 1.0, 1.0, 1.0, 1.0 };
+const GLfloat luz_especular[] = { 1.0, 1.0, 1.0, 1.0 };
+const GLfloat luz_posicao[] = { 1.0, 1.0, 1.0, 0.0 };
+
+const GLfloat material_ambiente[]    = { 0.0f, 0.0f, 1.0f };
+const GLfloat material_difuso[]    = { 1.0f, 1.0f, 1.0f };
+const GLfloat material_especular[]   = { 1.0f, 1.0f, 1.0f };
+const GLfloat brilho[] = { 100.0f };
+ 
+
+int main (int argc, char** argv){
+
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-    glutInitWindowSize(700,700);
-    glutInitWindowPosition(100,100);
-    glutCreateWindow("Helicóptero");
-    glutDisplayFunc(desenha);
-    glutKeyboardFunc(Teclado);
-    inicia();
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+    glutInitWindowSize(640,480); 
+    glutCreateWindow("OBJETOS 3D");
+    Inicia();
+   
+    
+    glutDisplayFunc(Mostrar);
+    glutReshapeFunc(Reshape);
+    glutTimerFunc(0,Timer,0);
+    glutKeyboardFunc(key);
+     glutPostRedisplay();
+    //
+
+   glClearColor(0,0.6, 1,1);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    
+    
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+
+    glEnable(GL_LIGHT0);
+    glEnable(GL_NORMALIZE);
+    glEnable(GL_COLOR_MATERIAL);
+    glEnable(GL_LIGHTING);
 
 
+    glLightfv(GL_LIGHT0, GL_AMBIENT,  luz_ambiente);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE,  luz_difusa);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, luz_especular);
+    glLightfv(GL_LIGHT0, GL_POSITION, luz_posicao);
+
+
+    glMaterialfv(GL_FRONT, GL_AMBIENT,   material_ambiente);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE,   material_difuso);
+    glMaterialfv(GL_FRONT, GL_SPECULAR,  material_especular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, brilho);    
+   
+    
     glutMainLoop();
-     return 0;
+    
+    
+    
+ return 0;
 }
-
-
